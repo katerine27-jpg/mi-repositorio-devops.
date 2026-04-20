@@ -25,4 +25,4 @@ jobs:
           aws-region: us-east-1
 
       - name: Upload artifact to S3
-        run: aws s3 cp mi-app.zip s3://mi-pipeline-source-${{ secrets.AWS_ACCOUNT_ID }}/mi-app.zip
+        run: aws s3 cp mi-app.zip s3://mi-pipeline-source-189399646295/mi-app.zip
