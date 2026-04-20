@@ -37,7 +37,7 @@ jobs:
               "echo \"\" >> mi-app/app/app.py",
               "echo \"@app.route(\\\"/\\\")\" >> mi-app/app/app.py",
               "echo \"def home():\" >> mi-app/app/app.py",
-              "echo \"    return \\\"<h1>Pipeline actualizado automáticamente 🚀</h1>\\\"\" >> mi-app/app/app.py",
+              echo \"    return \\\"<h1>app actualizada </h1>\\\"\" >> mi-app/app/app.py
               "echo \"\" >> mi-app/app/app.py",
               "echo \"if __name__ == \\\"__main__\\\":\" >> mi-app/app/app.py",
               "echo \"    app.run(host=\\\"0.0.0.0\\\", port=5000)\" >> mi-app/app/app.py",
