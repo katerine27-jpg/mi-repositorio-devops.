@@ -1,12 +1,13 @@
-name: Deploy to S3
+name: Deploy to S3 and EC2
 
 on:
   push:
     branches:
-      - master
+      - main
+      -master
 
 jobs:
-  build-and-upload:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,3 +27,21 @@ jobs:
 
       - name: Upload artifact to S3
         run: aws s3 cp mi-app.zip s3://mi-pipeline-source-189399646295/mi-app.zip
+
+      - name: Deploy on EC2 via SSM
+        run: |
+          aws ssm send-command \
+            --instance-ids ${{ secrets.EC2_INSTANCE_ID }} \
+            --document-name "AWS-RunShellScript" \
+            --comment "Deploy app from GitHub Actions" \
+            --parameters 'commands=[
+              "cd /home/ubuntu || cd /home/ec2-user",
+              "rm -rf app",
+              "aws s3 cp s3://mi-pipeline-source-189399646295/mi-app.zip .",
+              "unzip -o mi-app.zip",
+              "cd app",
+              "pip3 install -r requirements.txt || pip install -r requirements.txt",
+              "pkill -f app.py || true",
+              "nohup python3 app.py > app.log 2>&1 &"
+            ]' \
+            --region us-east-1
