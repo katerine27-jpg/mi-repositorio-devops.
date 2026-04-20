@@ -22,36 +22,19 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: us-east-1
 
-      - name: Desplegar en EC2 via SSM
+      - name: Deploy en EC2 (real)
         run: |
           aws ssm send-command \
             --instance-ids i-0fe74284ac518b019 \
             --document-name "AWS-RunShellScript" \
-            --comment "Deploy app from GitHub Actions" \
+            --comment "Deploy actualizado" \
             --parameters commands='[
               "cd /home/ubuntu",
-              "rm -rf mi-app",
-              "mkdir -p mi-app/app",
-              "echo \"from flask import Flask\" > mi-app/app/app.py",
-              "echo \"app = Flask(__name__)\" >> mi-app/app/app.py",
-              "echo \"\" >> mi-app/app/app.py",
-              "echo \"@app.route(\\\"/\\\")\" >> mi-app/app/app.py",
-              "echo \"def home():\" >> mi-app/app/app.py",
-              echo \"    return \\\"<h1>app actualizada </h1>\\\"\" >> mi-app/app/app.py
-              "echo \"\" >> mi-app/app/app.py",
-              "echo \"if __name__ == \\\"__main__\\\":\" >> mi-app/app/app.py",
-              "echo \"    app.run(host=\\\"0.0.0.0\\\", port=5000)\" >> mi-app/app/app.py",
-              "echo \"flask==2.3.2\" > mi-app/app/requirements.txt",
-              "echo \"FROM python:3.11-slim\" > mi-app/app/Dockerfile",
-              "echo \"WORKDIR /app\" >> mi-app/app/Dockerfile",
-              "echo \"COPY requirements.txt .\" >> mi-app/app/Dockerfile",
-              "echo \"RUN pip install -r requirements.txt\" >> mi-app/app/Dockerfile",
-              "echo \"COPY . .\" >> mi-app/app/Dockerfile",
-              "echo \"EXPOSE 5000\" >> mi-app/app/Dockerfile",
-              "echo \"CMD [\\\"python\\\", \\\"app.py\\\"]\" >> mi-app/app/Dockerfile",
-              "sudo systemctl start docker",
+              "if [ ! -d mi-repositorio-devops ]; then git clone https://github.com/katerine27-jpg/mi-repositorio-devops.git; fi",
+              "cd mi-repositorio-devops",
+              "git pull origin main || git pull origin master",
+              "cd app",
               "sudo docker rm -f mi-flask-app || true",
-              "cd /home/ubuntu/mi-app/app",
               "sudo docker build -t mi-flask-app .",
               "sudo docker run -d -p 5000:5000 --name mi-flask-app mi-flask-app"
             ]' \
